@@ -1,2 +1,1 @@
-# vibe-cast
-Share Your Music
+# Vibe Cast (Share Your Music)
