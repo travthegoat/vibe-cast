@@ -10,7 +10,11 @@ class SongSerializer(serializers.ModelSerializer):
 class VibeSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     song = SongSerializer(read_only=True)
+    likes_count = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
         model = Vibe
-        fields = ['id', 'author', 'mood', 'caption', 'song', 'created_at']
+        fields = ['id', 'author', 'mood', 'caption', 'song', 'likes_count', 'created_at']
+        
+    def get_likes_count(self, obj):
+        return obj.get_likes_count()

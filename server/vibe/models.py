@@ -20,6 +20,19 @@ class Vibe(models.Model):
     caption = models.TextField()
     song = models.ForeignKey(Song, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField(User, related_name='liked_vibes', blank=True)
     
     def __str__(self):
         return f"{self.author.username} - {self.mood} - {self.song.title}"
+    
+    def like(self, user):
+        if user in self.likes.all():
+            self.likes.remove(user)
+            return False
+        self.likes.add(user)
+        return True
+        
+    def get_likes_count(self):
+        return self.likes.count()
+        
+        
