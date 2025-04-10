@@ -28,6 +28,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include(router.urls)),
     path('api/auth/', include('djoser.urls.jwt')),
+    path('api/', include('user.urls')),
+    path('api/', include('vibe.urls')),
 ]
 
 if settings.DEBUG:

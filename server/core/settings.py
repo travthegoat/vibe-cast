@@ -41,8 +41,10 @@ INSTALLED_APPS = [
     
     'rest_framework',
     'djoser',
+    'django_filters',
     
     'user',
+    'vibe',
 ]
 
 MIDDLEWARE = [
@@ -135,6 +137,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend', 
+        'rest_framework.filters.SearchFilter',
+    ],
 }
 
 SIMPLE_JWT = {

@@ -29,9 +29,6 @@ class User(AbstractUser):
     def unfollow(self, user):
         self.following.remove(user)
     
-    def is_following(self, user):
-        return user in self.following.all()
-    
     def get_followers_count(self):
         return self.followers.count()
     
@@ -39,5 +36,5 @@ class User(AbstractUser):
         return self.following.count()
     
     def get_vibes_count(self):
-        return 2
+        return self.vibes.count()
     
