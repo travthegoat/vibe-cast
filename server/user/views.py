@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from rest_framework import permissions
+from rest_framework import permissions, status
 from .serializers import UserSerializer
 
 # Create your views here.
@@ -22,18 +22,18 @@ class SocialViewSet(viewsets.ModelViewSet):
     def follow(self, request, pk=None):
         user = get_object_or_404(User, id=pk)
         request.user.follow(user)
-        return Response({'message': 'User followed successfully'})
+        return Response({'message': 'User followed successfully'}, status=status.HTTP_200_OK)
     
     @action(detail=True, methods=['GET'])
     def followers(self, request, pk=None):
         user = get_object_or_404(User, id=pk)
         followers = user.followers.all()
         serializer = UserSerializer(followers, many=True)
-        return Response({'count': user.get_followers_count(), 'results': serializer.data})
+        return Response({'count': user.get_followers_count(), 'results': serializer.data}, status=status.HTTP_200_OK)
     
     @action(detail=True, methods=['GET'])
     def following(self, request, pk=None):
         user = get_object_or_404(User, id=pk)
         following = user.following.all()
         serializer = UserSerializer(following, many=True)
-        return Response({'count': user.get_following_count(), 'results': serializer.data})
+        return Response({'count': user.get_following_count(), 'results': serializer.data}, status=status.HTTP_200_OK)

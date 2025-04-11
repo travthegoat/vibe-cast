@@ -30,6 +30,7 @@ urlpatterns = [
     path('api/auth/', include('djoser.urls.jwt')),
     path('api/', include('user.urls')),
     path('api/', include('vibe.urls')),
+    path('api/comments/', include('comment.urls')),
 ]
 
 if settings.DEBUG:

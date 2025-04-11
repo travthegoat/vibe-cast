@@ -1,12 +1,14 @@
-from rest_framework import viewsets, permissions, filters
-from .models import Vibe, Song
-from .serializers import VibeSerializer, SongSerializer
-from rest_framework.response import Response
-from .permissions import IsVibeOwner
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets, permissions, filters, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from comment.serializers import CommentSerializer
 from user.serializers import UserSerializer
+from .models import Vibe, Song
+from .permissions import IsVibeOwner
+from .serializers import VibeSerializer, SongSerializer
 
 class VibeViewSet(viewsets.ModelViewSet):
     queryset = Vibe.objects.all()
@@ -37,23 +39,35 @@ class VibeViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(author=request.user, song=song)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     @action(detail=True, methods=['POST'])
     def like(self, request, pk=None):
         vibe = get_object_or_404(Vibe, id=pk)
         success = vibe.like(request.user)
         if success:
-            return Response({ 'message': "Vibe liked successfully!" })
+            return Response({ 'message': "Vibe liked successfully!" }, status=status.HTTP_200_OK)
         else:
-            return Response({ 'message': "Vibe disliked successfully!" })
+            return Response({ 'message': "Vibe disliked successfully!" }, status=status.HTTP_200_OK)
         
     @action(detail=True, methods=['GET'])
     def likes(self, request, pk=None):
         vibe = get_object_or_404(Vibe, id=pk)
         likes = vibe.likes.all()
         serializer = UserSerializer(likes, many=True)
-        return Response({ 'count': vibe.get_likes_count(), 'results': serializer.data })
+        return Response({ 'count': vibe.get_likes_count(), 'results': serializer.data }, status=status.HTTP_200_OK)
     
+    @action(detail=True, methods=['GET'])
+    def comments(self, request, pk=None):
+        vibe = get_object_or_404(Vibe, id=pk)
+        comments = vibe.comments.all()
+        serializer = CommentSerializer(comments, many=True)
+        return Response({ 'count': comments.count(), 'results': serializer.data}, status=status.HTTP_200_OK)
     
-    
+    @action(detail=True, methods=['POST'])
+    def comment(self, request, pk=None):
+        vibe = get_object_or_404(Vibe, id=pk)
+        serializer = CommentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(author=request.user, vibe=vibe)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
